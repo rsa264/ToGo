@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+ <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+         <title>ToGo</title>
+ 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
+
+<style>
+  body { margin:20; padding:20; }
+  #map { position:absolute; top:200; bottom:200; width:60%; height:40%;}
+</style>
+<style>
+
+/* Map style */
+
+#inputs,
+#errors,
+#directions {
+    width: 33.3333%;
+    max-width: 300px;
+    min-width: 200px;
+}
+
+#inputs {
+    z-index: 10;
+    top: 10px;
+    left: 10px;
+}
+
+#directions {
+    z-index: 99;
+    background: rgba(0,0,0,.8);
+    top: 20;
+    right: 0;
+    bottom: 20;
+    overflow: auto;
+}
+
+#errors {
+    z-index: 8;
+    opacity: 0;
+    padding: 10px;
+    border-radius: 0 0 3px 3px;
+    background: rgba(0,0,0,.25);
+    top: 90px;
+    left: 10px;
+}
+/* End of map */
+
+html {
+   box-sizing: border-box;
+ }
+
+ * {
+   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+   -webkit-tap-highlight-color: transparent;
+   box-sizing: inherit;
+ }
+
+ *:before, *:after {
+   box-sizing: inherit;
+ }
+
+ table {
+   width: 100%;
+ }
+
+
+ iframe {
+   border: 0;
+   height: 100%;
+   width: 100%;
+ }
+
+ button {
+   background: transparent;
+   border: 0;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+        appearance: none;
+
+ }
+
+ small {
+   display: block;
+ }
+
+ fieldset {
+   margin: 0;
+ }
+
+ input,
+ fieldset {
+   -webkit-appearance: none;
+      -moz-appearance: none;
+           appearance: none;
+   border: 0;
+   padding: 0;
+   margin: 0;
+   min-width: 0;
+   font-size: 1.0rem;
+   font-family: inherit;
+ }
+
+ input[type='number'] {
+   -moz-appearance: textfield;
+ }
+
+ input[type='number']::-webkit-inner-spin-button,
+ input[type='number']::-webkit-outer-spin-button {
+   -webkit-appearance: none;
+           appearance: none;
+ }
+
+
+
+ svg {
+   display: block;
+   pointer-events: none;
+ }
+
+ a {
+   color: inherit;
+   display: block;
+   text-decoration: none;
+ }
+
+ p > a {
+   display: inline;
+   font-family: inherit;
+   font-size: inherit;
+   font-style: inherit;
+ }
+
+ ul, ol {
+   list-style: none;
+   margin: 0;
+   padding: 0;
+ }
+
+ /* type.scss */
+ html {
+   font-size: 62.5%;
+   line-height: 1.5;
+ }
+
+ body, h1, h2, h3, h4, h5, h6, label, button, input, select, textarea, li, a, strong, i, span, th, td {
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   font-size: 1.6rem;
+   font-weight: 300;
+   text-rendering: optimizeSpeed;
+ }
+
+ h1 {
+   font-weight: 900;
+ }
+
+ h1, h2, h3, h4, h5, h6 {
+   line-height: 1.125;
+   margin-top: 0;
+   text-rendering: optimizeLegibility;
+ }
+
+ p + p {
+   margin-top: 1.5em;
+ }
+
+ /* mixins.scss */
+ /* z_index.scss */
+ /* utility.scss */
+ .u-m0 {
+   margin: 0;
+ }
+
+ .u-mt0 {
+   margin-top: 0;
+ }
+
+ .u-mr0 {
+   margin-right: 0;
+ }
+
+ .u-mb0 {
+   margin-bottom: 0;
+ }
+
+ .u-ml0 {
+   margin-left: 0;
+ }
+
+ .u-m05 {
+   margin: 5px;
+ }
+
+ .u-m1 {
+   margin: 10px;
+ }
+
+ .u-mt1 {
+   margin-top: 10px;
+ }
+
+ .u-mr1 {
+   margin-right: 10px;
+ }
+
+ .u-mb1 {
+   margin-bottom: 10px;
+ }
+
+ .u-ml1 {
+   margin-left: 10px;
+ }
+
+ .u-m2 {
+   margin: 20px;
+ }
+
+ .u-mt2 {
+   margin-top: 20px;
+ }
+
+ .u-mr2 {
+   margin-right: 20px;
+ }
+
+ .u-mb2 {
+   margin-bottom: 20px;
+ }
+
+ .u-ml2 {
+   margin-left: 20px;
+ }
+
+ .u-p0 {
+   padding: 0;
+ }
+
+ .u-pt0 {
+   padding-top: 0;
+ }
+
+ .u-pr0 {
+   padding-right: 0;
+ }
+
+ .u-pb0 {
+   padding-bottom: 0;
+ }
+
+ .u-pl0 {
+   padding-left: 0;
+ }
+
+ .u-p1 {
+   padding: 10px;
+ }
+
+ .u-pt1 {
+   padding-top: 12px;
+ }
+
+ .u-pr1 {
+   padding-right: 12px;
+ }
+
+ .u-pb1 {
+   padding-bottom: 12px;
+ }
+
+ .u-pl1 {
+   padding-left: 12px;
+ }
+
+ .u-p2 {
+   padding: 20px;
+ }
+
+ .u-pt2 {
+   padding-top: 20px;
+ }
+
+ .u-pr2 {
+   padding-right: 20px;
+ }
+
+ .u-pb2 {
+   padding-bottom: 20px;
+ }
+
+ .u-pl2 {
+   padding-left: 20px;
+ }
+
+ .u-db {
+   display: block;
+ }
+
+ .u-show {
+   display: block !important;
+ }
+
+ .u-show-dib {
+   display: inline-block !important;
+ }
+
+ .u-dn {
+   display: none;
+ }
+
+ .u-hide {
+   display: none !important;
+ }
+
+ .u-hide-off-canvas {
+   position: absolute;
+   top: 0;
+   -webkit-transform: translateX(3000px);
+           transform: translateX(3000px);
+ }
+
+ .u-dib {
+   display: inline-block;
+ }
+
+ .u-fl {
+   float: left;
+ }
+
+ .u-full-height {
+   min-height: 100vh;
+ }
+
+ .u-full-width-break-container {
+   margin-left: calc(-50vw + 50%);
+   width: 100vw;
+ }
+
+ .u-relative {
+   position: relative;
+ }
+
+ .u-absolute {
+   position: absolute;
+ }
+
+ .u-fixed {
+   -webkit-backface-visibility: hidden;
+           backface-visibility: hidden;
+   position: fixed;
+ }
+
+ .u-pos-t0 {
+   top: 0;
+ }
+
+ .u-pos-r0 {
+   right: 0;
+ }
+
+ .u-pos-b0 {
+   bottom: 0;
+ }
+
+ .u-pos-l0 {
+   left: 0;
+ }
+
+ .u-pos-tr0 {
+   top: 0;
+   right: 0;
+   bottom: auto;
+   left: auto;
+ }
+
+ .u-pos-tl0 {
+   top: 0;
+   right: auto;
+   bottom: auto;
+   left: 0;
+ }
+
+ .u-pos-br0 {
+   top: auto;
+   right: 0;
+   bottom: 0;
+   left: auto;
+ }
+
+ .u-pos-bl0 {
+   top: auto;
+   right: auto;
+   bottom: 0;
+   left: 0;
+ }
+
+ .u-pos-tr10 {
+   top: 10px;
+   right: 10px;
+ }
+
+ .u-pos-tl10 {
+   top: 10px;
+   left: 10px;
+ }
+
+ .u-pos-br10 {
+   bottom: 10px;
+   right: 10px;
+ }
+
+ .u-pos-bl10 {
+   bottom: 10px;
+   left: 10px;
+ }
+
+ .u-pos-c {
+   left: 0;
+   margin: 0 auto;
+   position: absolute;
+   right: 0;
+ }
+
+ .u-b-radius {
+   border-radius: 3px;
+ }
+
+ .u-b-radius-round {
+   border-radius: 50%;
+ }
+
+ .u-b-radius-big {
+   border-radius: 40px;
+ }
+
+ .u-b-radius-top {
+   border-radius: 3px 3px 0 0;
+ }
+
+ .u-b-radius-bottom {
+   border-radius: 0 0 3px 3px;
+ }
+
+ .u-b-radius-right {
+   border-radius: 0 3px 3px 0;
+ }
+
+ .u-b-radius-left {
+   border-radius: 3px 0 0 3px;
+ }
+
+ .u-oh {
+   overflow: hidden;
+ }
+
+ .u-truncate {
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+ }
+
+ .u-div-c {
+   margin: 0 auto;
+ }
+
+ .u-text-c {
+   text-align: center;
+ }
+
+ .u-text-r {
+   text-align: right;
+ }
+
+ .u-cursor-hand {
+   cursor: pointer;
+ }
+
+ .u-text-small {
+   font-size: 1.2rem;
+ }
+
+ .u-text-disclaimer {
+   font-size: 1.2rem;
+   font-style: italic;
+ }
+
+ .u-btn-wrapper {
+   padding: 15px 12px;
+   transition: -webkit-transform 0.5s;
+   transition: transform 0.5s;
+   transition: transform 0.5s, -webkit-transform 0.5s;
+   z-index: 2;
+ }
+
+ /* grid.scss */
+ .grid-u,
+ [class*="grid-u-"] {
+   display: inline-block;
+   letter-spacing: normal;
+   vertical-align: top;
+   word-spacing: normal;
+   zoom: 1;
+ }
+
+ .grid-r {
+   word-spacing: -0.34em;
+ }
+
+ .opera-only :-o-prefocus,
+ .grid-r {
+   /* Opera 12 on Windows needs word-spacing. The ".opera-only" selector is used to prevent actual prefocus styling and is not required in markup. */
+   word-spacing: -0.43em;
+ }
+
+ @media (min-width: 25em) {
+   .grid-u-sm-1-5 {
+     width: 20%;
+   }
+
+   .grid-u-sm-1-4,
+   .grid-u-sm-3-12 {
+     width: 25%;
+   }
+
+   .grid-u-sm-1-3,
+   .grid-u-sm-4-12 {
+     width: 33.3333%;
+   }
+
+   .grid-u-sm-2-5 {
+     width: 40%;
+   }
+
+   .grid-u-sm-1-2,
+   .grid-u-sm-6-12 {
+     width: 50%;
+   }
+
+   .grid-u-sm-3-5 {
+     width: 60%;
+   }
+
+   .grid-u-sm-2-3,
+   .grid-u-sm-4-6,
+   .grid-u-sm-8-12 {
+     width: 66.6667%;
+   }
+
+   .grid-u-sm-3-4,
+   .grid-u-sm-9-12 {
+     width: 75%;
+   }
+
+   .grid-u-sm-1 {
+     width: 100%;
+   }
+ }
+ @media (min-width: 34.375em) {
+   .grid-u-md-1-5 {
+     width: 20%;
+   }
+
+   .grid-u-md-1-4,
+   .grid-u-md-3-12 {
+     width: 25%;
+   }
+
+   .grid-u-md-1-3,
+   .grid-u-md-4-12 {
+     width: 33.3333%;
+   }
+
+   .grid-u-md-2-5 {
+     width: 40%;
+   }
+
+   .grid-u-md-1-2,
+   .grid-u-md-6-12 {
+     width: 50%;
+   }
+
+   .grid-u-md-3-5 {
+     width: 60%;
+   }
+
+   .grid-u-md-2-3,
+   .grid-u-md-4-6,
+   .grid-u-md-8-12 {
+     width: 66.6667%;
+   }
+
+   .grid-u-md-3-4,
+   .grid-u-md-9-12 {
+     width: 75%;
+   }
+
+   .grid-u-md-1 {
+     width: 100%;
+   }
+ }
+ @media (min-width: 46.875em) {
+   .grid-u-lg-1-5 {
+     width: 20%;
+   }
+
+   .grid-u-lg-1-4,
+   .grid-u-lg-3-12 {
+     width: 25%;
+   }
+
+   .grid-u-lg-1-3,
+   .grid-u-lg-4-12 {
+     width: 33.3333%;
+   }
+
+   .grid-u-lg-2-5 {
+     width: 40%;
+   }
+
+   .grid-u-lg-1-2,
+   .grid-u-lg-6-12 {
+     width: 50%;
+   }
+
+   .grid-u-lg-3-5 {
+     width: 60%;
+   }
+
+   .grid-u-lg-2-3,
+   .grid-u-lg-4-6,
+   .grid-u-lg-8-12 {
+     width: 66.6667%;
+   }
+
+   .grid-u-lg-3-4,
+   .grid-u-lg-9-12 {
+     width: 75%;
+   }
+
+   .grid-u-lg-1 {
+     width: 100%;
+   }
+ }
+ @media (min-width: 62.5em) {
+   .grid-u-xl-1-5 {
+     width: 20%;
+   }
+
+   .grid-u-xl-1-4,
+   .grid-u-xl-3-12 {
+     width: 25%;
+   }
+
+   .grid-u-xl-1-3,
+   .grid-u-xl-4-12 {
+     width: 33.3333%;
+   }
+
+   .grid-u-xl-2-5 {
+     width: 40%;
+   }
+
+   .grid-u-xl-1-2,
+   .grid-u-xl-6-12 {
+     width: 50%;
+   }
+
+   .grid-u-xl-3-5 {
+     width: 60%;
+   }
+
+   .grid-u-xl-2-3,
+   .grid-u-xl-4-6,
+   .grid-u-xl-8-12 {
+     width: 66.6667%;
+   }
+
+   .grid-u-xl-3-4,
+   .grid-u-xl-9-12 {
+     width: 75%;
+   }
+
+   .grid-u-xl-1 {
+     width: 100%;
+   }
+ }
+ /* icons.scss */
+ @font-face {
+   font-family: 'comeon-iconset';
+   src: url("https://dl.dropboxusercontent.com/u/26351585/Comeon/comeon-iconfamily.woff2") format("woff2");
+   src: url("https://dl.dropboxusercontent.com/u/26351585/Comeon/comeon-iconfamily.woff") format("woff");
+   font-weight: normal;
+   font-style: normal;
+ }
+ .btn--error {
+   /* overrides for Error State */
+ }
+
+ .btn--in-progress {
+   /* overrides for In Progress State */
+ }
+
+ .no-touchevents .btn.btn--main-cta:hover {
+   -webkit-transform: scale(1.03);
+           transform: scale(1.03);
+ }
+ .no-touchevents .btn.btn--secondary:hover {
+   -webkit-transform: none;
+           transform: none;
+ }
+
+ input[type="radio"] {
+   position: fixed;
+   left: -100px;
+ }
+
+/*input:not([type="radio"]) {
+   -webkit-appearance: none;
+      -moz-appearance: none;
+           appearance: none;
+   background-color: #fff;
+   display: block;
+   transition: 300ms ease;
+   border-radius: 7px;
+   border: 0;
+   max-height: 0;
+   margin: 0;
+   padding: 0 10px;
+   overflow: hidden;
+   width: 250px;
+   opacity: 0;
+   font-size: 16px;
+   text-align: center;
+   outline: 0;
+ }
+*/
+
+ [id="ride"]:checked ~ input.uride,
+ [id="deliver"]:checked ~ input.udeliver{
+   max-height: 40px;
+   padding: 10px;
+   margin: 10px 0;
+   opacity: 1;
+ }
+
+ button {
+   width: 250px;
+   height: 40px;
+   border-radius: 7px;
+   background-color: Teal;
+   font-size: 0;
+ }
+ button:before {
+   font-size: 16px;
+ }
+
+ [id="ride1"]:checked ~ button:before {
+   content: 'ride';
+ }
+
+ [id="deliver1"]:checked ~ button:before {
+   content: 'deliver';
+ }
+ select{
+ border:1px #DCDCDC solid;
+ width:260px;
+ height:35px;
+ float:left;
+ background-color: #fff;
+ font-size:13px;
+ font-family: 'Cairo', sans-serif;
+ }
+
+ /*#ride, label {
+   position: relative;
+   display: inline-block;
+   text-align: center;
+   font-weight: 700;
+   cursor: pointer;
+   color: cadetblue;
+   transition: 300ms ease;
+   width: calc(100% / 3 - 4px);
+ }*/
+ label:after {
+   content: '';
+   border: 10px solid transparent;
+   position: absolute;
+   bottom: -10px;
+   left: calc(50% - 10px);
+   transition: inherit;
+ }
+
+ [id="ride"]:checked ~ [for="ride"],
+ [id="deliver"]:checked ~ [for="deliver"]
+  {
+   color: #fff;
+ }
+ [id="ride"]:checked ~ [for="ride"],
+ [id="deliver"]:checked ~ [for="deliver"]
+ {
+   border-bottom-color: #fff;
+ }
+
+ .flex-wrap {
+     margin-top: 10em;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-wrap: wrap;
+   height: 300px;
+   text-align: center;
+ }
+
+
+         body {
+   background-color:white;
+   font-size: 16px;
+ }
+
+ .nav1 {
+  overflow: hidden;
+  background-color: CadetBlue;
+  top: 0;
+ padding: 30px 16px ;
+  width: 100%;
+ }
+
+ .nav1 a {
+  display: inline;
+  color: #f2f2f2;
+  text-align: left;
+  text-decoration: none;
+  font-size: 23px;
+ }
+
+ .center1{
+  padding-left: 220px;
+  }
+
+
+
+
+ 
+
+body .base {
+  z-index: 90;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: #FFFFFF;
+  width: 98px;
+  height: 98px;
+  transition: all 1s cubic-bezier(0.5, -0.75, 0.05, 1);
+  border-bottom-right-radius: 100%;
+}
+body .base .menu {
+  z-index: 100;
+  background-color: #FFFFFF;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100px;
+  height: 100px;
+  border-bottom-right-radius: 200px;
+  cursor: pointer;
+  transition: all 1s cubic-bezier(0.5, -0.75, 0.05, 1), background-color 1s ease;
+}
+body .base .menu .icon {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-100%, -100%);
+          transform: translate(-100%, -100%);
+}
+body .base .menu .icon:before, body .base .menu .icon:after {
+  content: '';
+  -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+  transition: top 0.5s ease 0.5s, background-color 0.75s ease 0.25s, -webkit-transform 0.5s ease;
+  transition: top 0.5s ease 0.5s, transform 0.5s ease, background-color 0.75s ease 0.25s;
+  transition: top 0.5s ease 0.5s, transform 0.5s ease, background-color 0.75s ease 0.25s, -webkit-transform 0.5s ease;
+}
+body .base .menu .icon .bar, body .base .menu .icon:before, body .base .menu .icon:after {
+  position: absolute;
+  height: 5px;
+  left: 0px;
+  right: 0px;
+  border-radius: 5px;
+  background-color: #21264B;
+}
+body .base .menu .icon .bar {
+  transition: opacity 1s linear 0.5s, background-color 0.75s ease 0.25s;
+  opacity: 1;
+  top: 10px;
+}
+body .base .menu .icon:before {
+  top: 0px;
+}
+body .base .menu .icon:after {
+  top: initial;
+  top: 20px;
+}
+body .base .icons {
+  z-index: 98;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+body .base .icons > * {
+  position: absolute;
+  font-size: 40px;
+  color: #21264B;
+  transition: 0.3s cubic-bezier(0.5, -0.25, 0.05, 1);
+}
+body .base .icons .fa-user {
+  top: 35px;
+  left: 0px;
+  transition-delay: 0.2s;
+}
+body .base .icons .fa-calendar-o {
+  top: 0px;
+  left: 0px;
+  color: #fff;
+  transition-delay: 0.1s;
+}
+body .base .icons .fa-tachometer {
+  top: 0px;
+  left: 35px;
+}
+body .base .section {
+  z-index: 96;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 0px;
+  width: 0px;
+  -webkit-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+  -webkit-transform: rotate(135deg);
+          transform: rotate(135deg);
+}
+body .base .section .cover1 {
+  -webkit-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+}
+body .base .section .cover1,
+body .base .section .cover1 .cover2,
+body .base .section .cover1 .cover2 .content {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+}
+body .base .section .cover1,
+body .base .section .cover1 .cover2 {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-100%, -100%) rotate(4deg);
+          transform: translate(-100%, -100%) rotate(4deg);
+  overflow: hidden;
+  pointer-events: none;
+  transition: -webkit-transform 0.5s ease-in;
+  transition: transform 0.5s ease-in;
+  transition: transform 0.5s ease-in, -webkit-transform 0.5s ease-in;
+}
+body .base .section .cover1 .cover2 {
+  -webkit-transform: translate(50%, -50%) rotate(-8deg);
+          transform: translate(50%, -50%) rotate(-8deg);
+  -webkit-transform-origin: 0% 100%;
+          transform-origin: 0% 100%;
+}
+body .base .section .cover1 .cover2 .content {
+  width: 150px;
+  height: 150px;
+  border-radius: 100%;
+  background-color: #EE1B59;
+  top: 100%;
+  left: 0%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  transition: background-color 0s, width 1.5s cubic-bezier(0.5, -0.5, 0.05, 1) 0s, height 1.5s cubic-bezier(0.5, -0.5, 0.05, 1) 0s;
+  pointer-events: auto;
+}
+body .base .section-static {
+  z-index: 94;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  -webkit-transform-origin: 0% 0%;
+          transform-origin: 0% 0%;
+  transition: width 1s cubic-bezier(0.5, -0.75, 0.05, 1), height 1s cubic-bezier(0.5, -0.75, 0.05, 1);
+}
+body .base .section-static:hover {
+  background-color: #EAEAEA;
+}
+body .base .section-static.top {
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  border-bottom-right-radius: 400px;
+}
+body .base .section-static.bottom {
+  -webkit-transform: rotate(45deg);
+          transform: rotate(45deg);
+  border-bottom-right-radius: 400px;
+}
+body .base.close {
+  width: 300px;
+  height: 300px;
+  transition: all 1.25s cubic-bezier(0.5, 0, 0.05, 1.75);
+}
+body .base.close .menu {
+  width: 150px;
+  height: 150px;
+  transition: all 1s cubic-bezier(0.5, 0, 0.05, 1.75), background-color 1s ease;
+  background-color: #21264B;
+}
+body .base.close .menu .icon .bar, body .base.close .menu .icon:before, body .base.close .menu .icon:after {
+  background-color: #FFFFFF;
+}
+body .base.close .menu .icon .bar {
+  opacity: 0;
+}
+body .base.close .menu .icon:before, body .base.close .menu .icon:after {
+  transition: top 0.5s linear, background-color 0.75s ease 0.25s, -webkit-transform 0.5s ease 0.5s;
+  transition: top 0.5s linear, transform 0.5s ease 0.5s, background-color 0.75s ease 0.25s;
+  transition: top 0.5s linear, transform 0.5s ease 0.5s, background-color 0.75s ease 0.25s, -webkit-transform 0.5s ease 0.5s;
+}
+body .base.close .menu .icon:before {
+  top: 10px;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+body .base.close .menu .icon:after {
+  top: 10px;
+  -webkit-transform: rotate(45deg);
+          transform: rotate(45deg);
+}
+body .base.close .icons {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+body .base.close .icons > * {
+  position: absolute;
+  font-size: 40px;
+  color: #21264B;
+  transition: 0.3s cubic-bezier(0.5, 0, 0.05, 1.75) 0.7s;
+  pointer-events: none;
+}
+body .base.close .icons .fa-user {
+  top: 35px;
+  left: 200px;
+}
+body .base.close .icons .fa-calendar-o {
+  top: 141px;
+  left: 141px;
+  color: #fff;
+  transition-delay: 0.65s;
+}
+body .base.close .icons .fa-tachometer {
+  top: 200px;
+  left: 35px;
+  transition-delay: 0.8s;
+}
+body .base.close .section .cover1 {
+  -webkit-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+}
+body .base.close .section .cover1,
+body .base.close .section .cover1 .cover2,
+body .base.close .section .cover1 .cover2 .content {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+}
+body .base.close .section .cover1,
+body .base.close .section .cover1 .cover2 {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-100%, -100%) rotate(16deg);
+          transform: translate(-100%, -100%) rotate(16deg);
+  overflow: hidden;
+  transition: -webkit-transform 0.5s ease-in 0.5s;
+  transition: transform 0.5s ease-in 0.5s;
+  transition: transform 0.5s ease-in 0.5s, -webkit-transform 0.5s ease-in 0.5s;
+}
+body .base.close .section .cover1 .cover2 {
+  -webkit-transform: translate(50%, -50%) rotate(-32deg);
+          transform: translate(50%, -50%) rotate(-32deg);
+  -webkit-transform-origin: 0% 100%;
+          transform-origin: 0% 100%;
+}
+body .base.close .section .cover1 .cover2 .content {
+  border-radius: 100%;
+  background-color: gray;
+  top: 100%;
+  left: 0%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  transition: background-color 0s, width 1.1s cubic-bezier(0.5, 0, 0.05, 1.75) 0.25s, height 1.1s cubic-bezier(0.5, 0, 0.05, 2) 0.25s;
+}
+body .base.close .section .cover1 .cover2 .content:hover {
+  background-color: #DD1350;
+}
+body .base.close .section-static {
+  width: 300px;
+  height: 300px;
+  transition: width 1.25s cubic-bezier(0.5, 0, 0.05, 2), height 1.25s cubic-bezier(0.5, 0, 0.05, 2);
+}
+
+
+</style>
+    </head>
+
+    <body>
+      <div >
+    <div class="nav1">
+      <!--<a  ><i class="	glyphicon glyphicon-menu-hamburger"></i></a>-->
+           <a class=" center1">Request A Gulf Car</a>
+           <div class="base">
+   <div class="menu">
+      <div class="icon">
+         <div class="bar"></div>
+      </div>
+   </div>
+   <div class="icons">
+      <i class="fa fa-user" aria-hidden="true"></i>
+      <i class="fa fa-home-o" aria-hidden="true"></i>
+      <i onclick="logout()" class="fa fa-tachometer" aria-hidden="true"></i>
+   </div>
+   <div class="section">
+      <div class="cover1">
+         <div class="cover2">
+            <a class="content" href="#calender"></a>
+         </div>
+      </div>
+   </div>
+   <a class="section-static top" href="#profile"></a>
+   <a class="section-static bottom" href="#dashboard"></a>
+</div>
+<script>$(".menu").click(function(){
+   $(this).parent().toggleClass("close");
+});
+
+</script>
+  </div>
+  		 </div >
+        <script src='https://api.mapbox.com/mapbox.js/plugins/mapbox-directions.js/v0.4.0/mapbox.directions.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox.js/plugins/mapbox-directions.js/v0.4.0/mapbox.directions.css' type='text/css' />
+
+      <script type="text/javascript" src="cordova.js"></script>
+
+      <div class="flex-wrap">
+      <fieldset>
+        <label style="color:black;">1- Pin your source and destination:</label>
+<br>
+<div id='map' style="" ></div>
+<div id='inputs' style="width: 33.3333%;
+    max-width: 300px;
+    min-width: 200px;
+     z-index: 10;
+    top: 10px;
+    left: 10px;"></div>
+<div id='errors' style="width: 33.3333%;
+    max-width: 300px;
+    min-width: 200px;
+       z-index: 8;
+    opacity: 0;
+    padding: 10px;
+    border-radius: 0 0 3px 3px;
+    background: rgba(0,0,0,.25);
+    top: 90px;
+    left: 10px;"></div>
+     <div id='directions'  style="width: 33.3333%;
+    max-width: 300px;
+    min-width: 200px; z-index: 99;
+    background: rgba(0,0,0,.8);
+    top: 20;
+    right: 0;
+    bottom: 20;
+    overflow: auto;">
+     <div id='routes'></div>
+      <div id='instructions'></div>
+
+          </div>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>  <br>
+            <br>  <br>
+            <br>
+            <br>
+            <br>
+
+<div>
+  <!--<a href="https://fatimaalkallas.000webhostapp.com/Logout.php">click here to log out</a>-->
+                <label style="color:black;">2- Select the period:</label>
+                <br>
+          <select name="Period" id="Period" style=" background-color:DimGrey; color:white; font-weight: bold;" class=" udeliver uride" required>
+            <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="1">1 hour</option>
+              <option value="2">2 hour</option>
+          </select>
+        </div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<div>
+<label style="color:black;">3-Select request type:</label>
+<br>
+<div>
+<input id="ride1" style=" background-color: DimGrey; height: 40px; width: 250px; color:white; border-radius: 7px; font-weight: bold;" class="uride " type="submit"  value="Ride" />
+<input id="deliver1" style=" background-color:DimGrey; height: 40px; width: 250px; color:white; border-radius: 7px; font-weight: bold;" class="udeliver " type="submit" value="Deliver" />
+</div>
+</div>
+
+</fieldset>
+</div>
+
+
+<script>
+   var myObj;
+     var arr=[];
+$(document).ready(function(){
+     $("#ride1").click(function(){
+
+       var pr = $("#Period").val();
+
+if (pr !=""&& (arr.length==4)){
+    var latitudeS=arr[0],longitudeS=arr[1],latitudeD=arr[2],longitudeD=arr[3];
+ myObj = {"period": pr, "type": "ride","latitudeS":latitudeS,"longitudeS":longitudeS,"latitudeD":latitudeD,"longitudeD":longitudeS};
+$.ajax({
+    type: "POST",
+    url: "https://fatimaalkallas.000webhostapp.com/requestPagephp.php",
+    data:  myObj,
+    dataType: 'json',
+    success: function(data) {
+    alert ( data.value);
+            window.open("index.html");
+},
+error: function(xhr,textStatus,err)
+{
+
+  alert("The request is sent successfully");
+  window.location.href ="index.html";
+//alert("readyState: " + xhr.readyState);
+//alert("responseText: "+ xhr.responseText);
+//alert("status: " + xhr.status);
+//alert("text status: " + textStatus);
+//alert("error: " + err);
+
+}
+});
+}else {
+   if(arr.length!=4)
+    alert("please pin the source and destination on the map");
+
+}//else
+});
+
+$("#deliver1").click(function(){
+
+  var pr = $("#Period").val();
+
+
+if (pr !=""&& (arr.length==4)){
+    var latitudeS=arr[0],longitudeS=arr[1],latitudeD=arr[2],longitudeD=arr[3];
+ myObj = {"period": pr, "type": "deliver","latitudeS":latitudeS,"longitudeS":longitudeS,"latitudeD":latitudeD,"longitudeD":longitudeS};
+$.ajax({
+type: "POST",
+url: "https://fatimaalkallas.000webhostapp.com/requestPagephp.php",
+data:  myObj,
+dataType: 'json',
+success: function(data) {
+alert ( data.value);
+       window.open("index.html");
+},
+error: function(xhr,textStatus,err)
+{
+  alert("The request is sent successfully");
+  window.location.href ="index.html";
+/* AJAX error code */
+    /*
+alert("readyState: " + xhr.readyState);
+alert("responseText: "+ xhr.responseText);
+alert("status: " + xhr.status);
+alert("text status: " + textStatus);
+alert("error: " + err);
+*/
+}
+});
+}else{
+   if(arr.length!=4)
+    alert("please pin the source and destination on the map");
+
+}//else
+});
+});
+    L.mapbox.accessToken = 'pk.eyJ1Ijoic2FyYWhvIiwiYSI6ImNqbWE2ODJnZTA2Ymszb3E0aDB5NGV5ZmgifQ.v7__bPIt1pf8i2OvN1qd2A';
+var map = L.mapbox.map('map', 'mapbox.streets', {
+   zoomControl: false
+}).setView([24.7273,46.6357], 16);
+
+
+// move the attribution control out of the way
+map.attributionControl.setPosition('bottomleft');
+
+// create the initial directions object, from which the layer
+// and inputs will pull data.
+var directions = L.mapbox.directions({
+    profile: 'mapbox.walking'
+});
+
+var directionsLayer = L.mapbox.directions.layer(directions)
+    .addTo(map);
+
+var directionsInputControl = L.mapbox.directions.inputControl('inputs', directions)
+    .addTo(map);
+
+var directionsErrorsControl = L.mapbox.directions.errorsControl('errors', directions)
+    .addTo(map);
+
+
+var directionsInstructionsControl = L.mapbox.directions.instructionsControl('instructions', directions)
+    .addTo(map);
+     // document.getElementById('directions').innerHTML=JSON.stringify(L.lngLat);
+    var coun=0;
+    map.on('click', function(e) {
+    var latitude = e.latlng.lat;
+    var longitude = e.latlng.lng;
+
+        arr.push(latitude);
+        arr.push(longitude);
+
+
+    console.log(latitude + " - " + longitude);
+  });
+
+    function logout(){
+        window.localStorage.removeItem("user");
+    }
+</script>
+
+    </body>
+</html>
