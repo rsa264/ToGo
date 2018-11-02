@@ -18,66 +18,83 @@
         <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
-<script>
-        
-        var user = window.localStorage.getItem("time");
-            if(user != null)
-                window.open("driverinfo.html");  
-					
-else if (typeof(Storage) !== "undefined") {
-//alert('load');
-        var user = window.localStorage.getItem("user");
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.css' rel='stylesheet' />
 
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <style>
 	
-		var myObj = {"userNo": user};
+ body { margin:0; padding:0; }
+  #map { position:absolute; top:620; bottom:0; width:100%; height:30%;}
 
-	$.ajax({
-		  type: "POST",
-		  url: "https://fatimaalkallas.000webhostapp.com/getDriverInfo.php",
-		  data:  myObj,
-		  dataType: 'json',
-		  success: function(data) {
-//alert('success');
 
-			if (data.result == "true"){
-			//window.localStorage.removeItem("time");
+.overlay {
+    position: absolute;
+    top: 590px;
+    left: 80px;
+}
 
-				//alert (data.value);
-				if (data.status=="ready"){
-					window.localStorage.requestNo=data.rno;
-					}else window.localStorage.requestNo=data.value.rno;
+.overlay button {
+    font:600 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: DimGrey;
+    color: #fff;
+    display: inline-block;
+    margin: 0;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
 
-								
+.overlay button:hover {
+    background-color:#4ea0da;
+}
 
-				window.localStorage.time=data.time;
-				    window.open("driverinfo.html");
-			}else $("#loading").hide(); //alert(data.value);
-		},
-     error: function(xhr,textStatus,err){
-    /*alert("readyState: " + xhr.readyState);
-    alert("responseText: "+ xhr.responseText);
-    alert("status: " + xhr.status);
-    alert("text status: " + textStatus);
-    alert("error: " + err);  */   
-	if(xhr.status==0)
-	alert("please check your internet connection");
-	else if (xhr.status!=0&&xhr.status!=200)
-		alert("there is an error.. please try again");
+/*contact driver style*/
+#contactDriver{
+background-color: DimGrey;
+ height: 40px;
+ width: 250px;
+ color:white;
+ border-radius: 7px;
+ font-weight: bold;
+}
 
-	}
-		});
-		}
-		else{
-$("#test").html("no user storage");
+.small{
+
+font-size:13px;}
+
+/*Rate design*/
+#barRate, #rerequest {
+background-color: DimGrey;
+ height: 30px;
+padding:5px;
+ width: 155px;
+ color:white;
+ border-radius: 15px;
 
 }
-  </script>
-        
-<style>
-  body { margin:20; padding:20; }
-  #map { position:absolute; top:200; bottom:200; width:100%; height:40%;}
-</style>
-<style>
+#barRate{
+ margin-left:10%;}
+
+#voterNo{
+
+ height: 30px;
+padding:5px;
+ width: 155px;
+margin-left:30%;
+}
+
+#countDown{
+border: 5px solid DimGrey;
+height: 165px;
+width: 165px;
+ border-radius: 82.5px;
+ padding-top:12px;
+  color:DimGrey;
+   font-size:20px;
+   margin-left:3%;
+}
 
 /* Map style */
 
@@ -871,7 +888,7 @@ html {
  }
 
  .flex-wrap {
-     margin-top: 10em;
+     margin-top: 30px;
    display: flex;
    justify-content: center;
    align-items: center;
@@ -1179,22 +1196,414 @@ body .base.close .section-static {
   height: 300px;
   transition: width 1.25s cubic-bezier(0.5, 0, 0.05, 2), height 1.25s cubic-bezier(0.5, 0, 0.05, 2);
 }
-#Period{
-  margin-left: 80px;
-    padding-left: 50px;
+</style>
+<script>
+var isAccept = null;
+var time;
+var rno;
+var milliTime=0;
+var complete = null;
+var hasAccepted=false; // does the driver accepet a request or not.. in the first time i assume has not accepted
+$(document).ready(function(){
+$("#center1").html("Waiting ...");
+//window.setInterval("countDown()",1000);
+var dnumber= "";
+//alert('beginning');
 
+// get time period
+if (typeof(Storage) !== "undefined") {
+/*window.localStorage.time="22:00";
+window.localStorage.user="554417911";*/
+
+rno = window.localStorage.getItem("requestNo");
+var t1 = window.localStorage.getItem("time");
+//alert('time: '+t1);
+ $("#map").hide();
+  $("#countDown").hide();
+
+     $(".overlay button").hide();
+
+var date = new Date();
+/*var pr1 = parseInt(t1);
+if (pr1==1||pr1==2){/
+pr1=pr1*60;
+}
+var h2 = (date.getHours())*60;
+var m2 = date.getMinutes();
+var total2 = h2+m2+pr1;
+h2 = Math.floor(total2/60);
+m2 = Math.floor(total2%60);
+time = h2 +":"+m2;
+var t1=time;*/
+var testno = t1.indexOf(':');
+		var h1 = (parseInt(t1.slice(0,testno),10))*60;
+		var m1 = parseInt(t1.slice(testno+1),10);
+		var total1 = h1+m1;
+		var h2 = (date.getHours())*60;
+		var m2 = date.getMinutes();
+		var total2 = h2+m2;
+		var result = total1-total2;
+		milliTime = result*60000;
+		//alert("milli second "+milliTime);
 
 }
+isAccept =  window.setInterval("loadInfo()",10000);
 
-</style>
+$("#contactDriver").click(function(){
+if (dnumber !=""){
+window.open("tel:"+dnumber);}
+else alert ("no number!!");
+});
+
+
+
+
+});
+function loadInfo(){
+var countDown = window.setInterval("countDown()",1000);
+
+if (typeof(Storage) !== "undefined") {
+//alert('load');
+        var user = window.localStorage.getItem("user");
+
+	
+		var myObj = {"userNo": user};
+
+	$.ajax({
+		  type: "POST",
+		  url: "https://fatimaalkallas.000webhostapp.com/getDriverInfo.php",
+		  data:  myObj,
+		  dataType: 'json',
+		  success: function(data) {
+//alert('success');
+
+			if (data.result == "true"){
+			if(data.status=="ready"){
+			if (hasAccepted===true){
+			alert("Sorry, this driver can't come to you..\n please wait another one to accept");
+			hasAccepted = false;
+			}
+				$("#loading").hide();
+				$("#countDown").show();
+				$("#test").html(data.value+'<br><button type="button" class="btn btn-default" onClick="cancelRequest()">cancel the request</button>');
+				$("#center1").html('Waiting...');
+				rno = data.rno;
+			}
+			else if(data.status=="accept" && data.value!=null){
+			hasAccepted = true; // in this stiuation i this case will change
+			//alert('true ');
+ clearInterval(isAccept);
+//alert('clear accept');
+ $("#loading").hide();
+  $("#map").show();
+    $("#countDown").show();
+
+    $(".overlay button").show();
+
+  
+					$("#center1").html("Driver Information");
+		$("#test").html('<div class = "row">');
+		$("#test").append('<div class = "col-xs-12 col-xs-offset-1"></div> </div>');
+		$("#test").append('<div class = "row"><div class = "col-xs-12 col-xs-offset-1">');
+		//show the request number
+		$("#test").append('<span id = "rno"></span><hr></div></div>');
+		//show the drver name
+		$("#test").append('<div class = "row"><div class = "col-xs-12 " ><span id = "dname"></span></div><div class = "row"><div class = "col-xs-12" id = "voterNo"><div id = "barRate"></div><span id = "dnorate"></span></div></div>');
+		//show the rate of the drver
+		$("#test").append('');
+		
+		//to show the number of voters and if there is no voters the text will change to be "No one vote"
+		$("#test").append('</div><br>');
+		//show cart number
+		$("#test").append('<div class = "row"><div class = "col-xs-8"><span id = "cartno"></span></div>');
+		$("#test").append('<div class = "col-xs-4"></div></div><br>');
+		$("#test").append('<div class = "row">');
+		$("#test").append('<div class = "col-xs-12 col-xs-offset-1">');
+		//show contact driver button to call the driver
+		$("#test").append('<button type="button" id="contactDriver" onClick="contactDriver()" class="btn btn-default"></button>');
+		$("#test").append('<br><button type="button" class="btn btn-default" onClick="cancelRequest()">cancel the request</button>');
+		$("#test").append('</div></div>');
+
+					
+		//show the content
+		/*
+
+*/
+
+		dnumber = data.value.dno;
+		rno = data.value.rno;
+		$("#rno").html("<b>Request number: </b>"+data.value.rno);
+		$("#dname").html("<b>Driver name: </b>"+data.value.dname);
+		var rate = parseFloat(data.value.drate);
+		//
+		var test = rate.toString();
+		var testno = test.indexOf('.');
+		var num = parseInt(test.slice(testno+1),10);
+		var rate2 = parseInt(5-rate);
+		if (num >=1 && num <=99){
+		rate2++;
+		}
+		var sub = 5-rate2;
+		var stars="";
+		for (var i = 1; i<=5; i++){
+			if(sub != 0){
+				sub--;
+				stars+='<span class="fas fa-star"></span>';
+			}else if(num>=1&&num<=99){
+			num = 0;
+			stars+='<span class="fas fa-star-half"></span>';
+			} else if (rate2!=0){
+				rate2--;
+				stars+='<span class="far fa-star"></span>';
+			}
+			//alert ("i= "+i+" sub= "+sub+" num= "+num+" rate2= "+rate2+"\n"+stars);
+		}
+		stars+= rate;
+		$("#barRate").html(stars);
+		//
+		//$("#barRate").html('');
+		//<div class="star-ratings-sprite"><span style="width:25%" class="star-ratings-sprite-rating"></span></div>
+		//<div class="star-ratings-css"><div class="star-ratings-css-top" style="width: 50%"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><div class="star-ratings-css-bottom"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div></div>
+
+		//          
+
+		$("#contactDriver").html('<span class="glyphicon glyphicon-earphone"></span> Contact with driver ');
+		
+		var donrate = parseInt(data.value.dnorate);
+		if (donrate>1){
+		$("#dnorate").html(donrate+" reviews");
+		}else if (donrate==1){
+		$("#dnorate").html(donrate+" review");
+		}else $("#dnorate").html("No one review");
+complete =  window.setInterval("loadInfo()",30000);
+		
+		//$("#time").html(data.value.time);
+		//localStorage.time=data.value.time;
+}
+		}else{ 
+			window.open("request.html");
+
+		
+		}
+
+	 
+
+		      
+  },
+     error: function(xhr,textStatus,err){
+   
+	if(xhr.status==0)
+	alert("please check your internet connection");
+	else if (xhr.status!=0&&xhr.status!=200)
+		alert("there is an error.. please try again");
+
+	}
+		});
+}else{
+$("#test").html("no user storage");
+
+}
+}
+
+
+function countDown(){
+var date = new Date();
+var t1 = window.localStorage.getItem("time");
+//var index = time.indexOf(":");
+//var h= time.slice(0,index-1);
+//$("#countDown").html("now: "+date+" pervious: "+time);
+		var testno = t1.indexOf(':');
+		var h1 = (parseInt(t1.slice(0,testno),10))*60;
+		var m1 = parseInt(t1.slice(testno+1),10);
+		var total1 = h1+m1;
+		// to conver from 24 hours to hour in form AM or PM
+		var hour, minute, typee;
+		hour = parseInt(t1.slice(0,testno),10);
+		
+		if (hour>12){
+		if (hour==26){
+		hour="0"+2;
+		typee = "AM";
+		}
+		else if (hour==25){
+		hour="0"+1;
+		typee = "AM";
+		}
+		else{ 
+		hour=hour-12;
+		
+		if(hour==12){
+		typee = "AM";
+		}else {
+		if (hour <10)
+		hour="0"+hour; 
+		typee = "PM";
+		}
+		}
+		if(m1<10)
+		minute="0"+m1;
+		else minute= m1;
+		
+
+		}else {
+		//hour = hour;
+		if(m1<10)
+		minute="0"+m1;
+		else minute= m1;
+		if(hour==12){
+		typee = "PM";
+		}else {
+		if (hour <10)
+		hour="0"+hour; 
+		typee = "AM";}
+		}
+		var h2 = (date.getHours())*60;
+		var m2 = date.getMinutes();
+		var total2 = h2+m2;
+		var result = total1-total2;
+		//milliTime = result*60000;
+		if(result>0){
+		h1 = Math.floor(result/60);
+		m1 = Math.floor(result%60);
+		if (h1==24){
+		h1=0;
+		}else if (h1==25){
+		h1=1;
+		}else if (h1==26){
+		h1=2;
+		}else if(h1<10){
+		h1="0"+h1;
+		}
+		if (m1<10){
+		m1="0"+m1;
+		}
+		
+		
+		
+		//"hours: "++"  "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()
+$("#countDown").html("<p class = 'small'>Remain time:</p><b>"+h1 +":"+ m1+"</b><br><p class = 'small'>expected time:</p>"+hour+":"+minute+" "+typee);}
+else{
+if (hasAccepted == false){
+//alert('cancel');
+ $("#map").hide();
+     $(".overlay button").hide();
+	 $("#loading").remove();
+$("#countDown").remove();
+		$("#center1").html('expiared time!!');
+ $("#test").html('<p><b>expiared time!! </b> the time that you selected has been finished, do you want to request again?</p><br><button type="button" id="rerequest" onClick="rerequest()()" class="btn btn-default">Re-request</button>');
+ clearInterval(isAccept);
+//onclick="rerequest()"
+clearInterval(countDown);
+}else {
+//alert ("time has been finished");
+$("#countDown").html("Sorry  for the delay,<br> the driver on the way").css({ "height": "auto","width":"auto","border-radius":"1px","padding":"3px"});;
+clearInterval(countDown);
+/*
+border: 5px solid DimGrey;
+height: 165px;
+width: 165px;
+ border-radius: 82.5px;*/
+
+}
+}
+ }
+function rerequest(){
+//alert("rerequest method");
+var r = confirm("Do you want to Re request again?");
+if (r == true) {
+
+//alert("after confirm");
+
+		//alert("inside true");
+	//alert('rno = '+rno);
+		var myObj = {"rno": rno, "type":"rerequest"};
+
+	$.ajax({
+		  type: "POST",
+		  url: "https://fatimaalkallas.000webhostapp.com/getDriverInfo.php",
+		  data:  myObj,
+		  dataType: 'json',
+		  success: function(data) {
+//alert('success');
+
+			if (data.result == "true"){
+			window.localStorage.removeItem("time");
+			window.localStorage.removeItem("requestNo");
+			
+
+				//alert (data.value);
+				    window.open("request.html");
+			}else alert(data.value);
+		},
+     error: function(xhr,textStatus,err){
+  
+	if(xhr.status==0)
+	alert("please check your internet connection");
+	else if (xhr.status!=0&&xhr.status!=200)
+		alert("there is an error.. please try again");
+
+	}
+		});
+
+ 
+}
+} 
+function contactDriver(){
+if (dnumber !=""){
+window.open("tel:0"+dnumber);}
+else alert ("no number!!");
+} 
+
+function cancelRequest(){
+//alert("cncel method");
+var r = confirm("Do you want to cancel this request?");
+if (r == true) {
+
+//alert("after confirm");
+
+
+
+		//alert("inside true");
+	
+		var myObj = {"rno": rno, "type":"cancel"};
+
+	$.ajax({
+		  type: "POST",
+		  url: "https://fatimaalkallas.000webhostapp.com/getDriverInfo.php",
+		  data:  myObj,
+		  dataType: 'json',
+		  success: function(data) {
+//alert('success');
+
+			if (data.result == "true"){
+			window.localStorage.removeItem("time");
+
+				alert (data.value);
+				    window.open("request.html");
+			}else alert(data.value);
+		},
+     error: function(xhr,textStatus,err){
+ 
+	if(xhr.status==0)
+	alert("please check your internet connection");
+	else if (xhr.status!=0&&xhr.status!=200)
+		alert("there is an error.. please try again");
+
+	}
+		});
+		}
+		
+
+}
+</script>
     </head>
 
     <body>
       <div >
     <div class="nav1">
       <!--<a  ><i class="	glyphicon glyphicon-menu-hamburger"></i></a>-->
-           <a class=" center1">Request A Gulf Car</a>
-           <div class="base">
+           <a class=" center1" id = "center1"></a>
+   <div class="base">
    <div class="menu">
       <div class="icon">
          <div class="bar"></div>
@@ -1218,263 +1627,244 @@ body .base.close .section-static {
 <script>$(".menu").click(function(){
    $(this).parent().toggleClass("close");
 });
-</script>
-  </div>
-  		 </div >
-        <script src='https://api.mapbox.com/mapbox.js/plugins/mapbox-directions.js/v0.4.0/mapbox.directions.js'></script>
-<link rel='stylesheet' href='https://api.mapbox.com/mapbox.js/plugins/mapbox-directions.js/v0.4.0/mapbox.directions.css' type='text/css' />
-
-      <script type="text/javascript" src="cordova.js"></script>
-
-      <div class="flex-wrap">
-	  <div id = "loading"><img src="loading.gif" alt="loading"></div>
-
-      <fieldset>
-	  <br>
-	  <br>
-        <label style="color:black;">1- Pin your source and destination:</label>
-<br>
-<div id='map' style="" ></div>
-<div id='inputs' style="width: 33.3333%;
-    max-width: 300px;
-    min-width: 200px;
-     z-index: 10;
-    top: 10px;
-    left: 10px;"></div>
-<div id='errors' style="width: 33.3333%;
-    max-width: 300px;
-    min-width: 200px;
-       z-index: 8;
-    opacity: 0;
-    padding: 10px;
-    border-radius: 0 0 3px 3px;
-    background: rgba(0,0,0,.25);
-    top: 90px;
-    left: 10px;"></div>
-     <div id='directions'  style="width: 33.3333%;
-    max-width: 300px;
-    min-width: 200px; z-index: 99;
-    background: rgba(0,0,0,.8);
-    top: 20;
-    right: 0;
-    bottom: 20;
-    overflow: auto;">
-     <div id='routes'></div>
-      <div id='instructions'></div>
-
-          </div>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>  <br>
-            <br>  <br>
-            <br>
-            <br>
-            <br>
-
-<div>
-  <!--<a href="https://fatimaalkallas.000webhostapp.com/Logout.php">click here to log out</a>-->
-                <label style="color:black;">2- Select the period:</label>
-                <br>
-          <select name="Period" id="Period" style=" background-color:DimGrey; color:white; font-weight: bold;" class=" udeliver uride" required>
-            <option value="15">15 minutes</option>
-              <option value="30">30 minutes</option>
-              <option value="45">45 minutes</option>
-              <option value="1">1 hour</option>
-              <option value="2">2 hour</option>
-          </select>
-        </div>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-
-<div>
-<label style="color:black;">3-Select request type:</label>
-<br>
-<div>
-<input id="ride1" style=" background-color: DimGrey; height: 40px; width: 250px; color:white; border-radius: 7px; font-weight: bold;" class="uride " type="submit"  value="Ride" />
-<input id="deliver1" style=" background-color:DimGrey; height: 40px; width: 250px; color:white; border-radius: 7px; font-weight: bold;" class="udeliver " type="submit" value="Deliver" />
-</div>
-</div>
-
-</fieldset>
-</div>
-
-
-<script>
-$("#loading").remove();
-
-   var myObj;
-     var arr=[];
-$(document).ready(function(){
-     $("#ride1").click(function(){
-
-       var pr = $("#Period").val();
-
-if (pr !=""&& (arr.length==4)){
-    var latitudeS=arr[0],longitudeS=arr[1],latitudeD=arr[2],longitudeD=arr[3];
-	var date = new Date();
-var pr1 = parseInt(pr);
-if (pr1==1||pr1==2){
-pr1=pr1*60;
-}
-var h2 = (date.getHours())*60;
-var m2 = date.getMinutes();
-var total2 = h2+m2+pr1;
-h2 = Math.floor(total2/60);
-m2 = Math.floor(total2%60);
-var time = h2 +":"+m2;
-
- myObj = {"period": pr, "type": "ride","latitudeS":latitudeS,"longitudeS":longitudeS,"latitudeD":latitudeD,"longitudeD":longitudeS, "time":time};
-$.ajax({
-    type: "POST",
-    url: "https://fatimaalkallas.000webhostapp.com/requestPagephp.php",
-    data:  myObj,
-    dataType: 'json',
-    success: function(data) {
-    alert ( data.value);
-            window.open("index.html");
-},
-error: function(xhr,textStatus,err)
-{
-
-  alert("The request is sent successfully");
-  var date = new Date();
-var pr1 = parseInt(pr);
-if (pr1==1||pr1==2){
-pr1=pr1*60;
-}
-var h2 = (date.getHours())*60;
-var m2 = date.getMinutes();
-var total2 = h2+m2+pr1;
-h2 = Math.floor(total2/60);
-m2 = Math.floor(total2%60);
-var time = h2 +":"+m2;
-
-window.localStorage.setItem("time", time);
-    window.open("driverinfo.html");
-//alert("readyState: " + xhr.readyState);
-//alert("responseText: "+ xhr.responseText);
-//alert("status: " + xhr.status);
-//alert("text status: " + textStatus);
-//alert("error: " + err);
-
-}
-});
-}else {
-   if(arr.length!=4)
-    alert("please pin the source and destination on the map");
-
-}//else
-});
-
-$("#deliver1").click(function(){
-
-  var pr = $("#Period").val();
-
-
-if (pr !=""&& (arr.length==4)){
-    var latitudeS=arr[0],longitudeS=arr[1],latitudeD=arr[2],longitudeD=arr[3];
-	    var date = new Date();
-var pr1 = parseInt(pr);
-if (pr1==1||pr1==2){
-pr1=pr1*60;
-}
-var h2 = (date.getHours())*60;
-var m2 = date.getMinutes();
-var total2 = h2+m2+pr1;
-h2 = Math.floor(total2/60);
-m2 = Math.floor(total2%60);
-var time = h2 +":"+m2;
- myObj = {"period": pr, "type": "deliver","latitudeS":latitudeS,"longitudeS":longitudeS,"latitudeD":latitudeD,"longitudeD":longitudeS, "time":time};
-$.ajax({
-type: "POST",
-url: "https://fatimaalkallas.000webhostapp.com/requestPagephp.php",
-data:  myObj,
-dataType: 'json',
-success: function(data) {
-alert ( data.value);
-       window.open("index.html");
-},
-error: function(xhr,textStatus,err)
-{
-  alert("The request is sent successfully");
-
-
-window.localStorage.setItem("time", time);
-    window.open("driverinfo.html");
-/* AJAX error code */
-    /*
-alert("readyState: " + xhr.readyState);
-alert("responseText: "+ xhr.responseText);
-alert("status: " + xhr.status);
-alert("text status: " + textStatus);
-alert("error: " + err);
-*/
-}
-});
-}else{
-   if(arr.length!=4)
-    alert("please pin the source and destination on the map");
-
-}//else
-});
-});
-    L.mapbox.accessToken = 'pk.eyJ1Ijoic2FyYWhvIiwiYSI6ImNqbWE2ODJnZTA2Ymszb3E0aDB5NGV5ZmgifQ.v7__bPIt1pf8i2OvN1qd2A';
-var map = L.mapbox.map('map', 'mapbox.streets', {
-   zoomControl: false
-}).setView([24.7273,46.6357], 16);
-
-
-// move the attribution control out of the way
-map.attributionControl.setPosition('bottomleft');
-
-// create the initial directions object, from which the layer
-// and inputs will pull data.
-var directions = L.mapbox.directions({
-    profile: 'mapbox.walking'
-});
-
-var directionsLayer = L.mapbox.directions.layer(directions)
-    .addTo(map);
-
-var directionsInputControl = L.mapbox.directions.inputControl('inputs', directions)
-    .addTo(map);
-
-var directionsErrorsControl = L.mapbox.directions.errorsControl('errors', directions)
-    .addTo(map);
-
-
-var directionsInstructionsControl = L.mapbox.directions.instructionsControl('instructions', directions)
-    .addTo(map);
-     // document.getElementById('directions').innerHTML=JSON.stringify(L.lngLat);
-    var coun=0;
-    map.on('click', function(e) {
-    var latitude = e.latlng.lat;
-    var longitude = e.latlng.lng;
-
-        arr.push(latitude);
-        arr.push(longitude);
-
-
-    console.log(latitude + " - " + longitude);
-  });
 
     function logout(){
-window.localStorage.removeItem("user");
+
+        window.localStorage.clear();
          window.open("index.html");  
     }
 </script>
+  </div>
+  		 </div >
+		 	<script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js" charset="utf-8"></script>
 
-    </body>
-</html>
+		 			<div id="map"></div>
+
+		 
+
+		      <script type="text/javascript" src="cordova.js"></script>
+			  <!--  -->
+<div class="flex-wrap">
+	  	  	  <p id="countDown"></p>
+<div id = "loading"><img src="loading.gif" alt="loading"></div>
+      <div class='overlay'>
+    <button id='replay', onclick='start()'>Track Driver</button>
+     </div>			
+	  <div class = "container"id = "test">
+
+
+</div>
+	</div>	
+		 
+<script>
+
+var user = window.localStorage.getItem("user");
+//alert("user:"+user);
+var obj, xmlhttp, response, x;
+    var origin,destination;
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2FyYWhvIiwiYSI6ImNqbWE2ODJnZTA2Ymszb3E0aDB5NGV5ZmgifQ.v7__bPIt1pf8i2OvN1qd2A';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9',
+    center: [46.639429,24.726642],
+    zoom: 15
+});
+var latitudeDriver=46.637101,longitudeDriver=24.728411,latitudeS=46.637101,longitudeS=24.728411;
+//alert('rno1 is '+rno);
+        xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+		  //alert('rnoc is '+rno);
+
+          if (this.readyState == 4 && this.status == 200) {
+               //    window.alert("11");
+          response = JSON.parse(this.responseText);
+           // window.alert("I'm here");
+            latitudeS=response.value.latitudeS;
+            longitudeS=response.value.longitudeS;   
+            // window.alert(longitudeS);
+               
+    }
+};
+              
+
+     xmlhttp.open("GET", "https://cors.io/?https://fatimaalkallas.000webhostapp.com/accept.php?user="+user, true);
+     xmlhttp.send();
+	// alert('rno2 is '+rno);
+
+    
+// Driver locTION
+       /* map.on('load', function () {
+         map.addLayer({
+  id: 'start',
+  type: 'circle',
+  source: {
+    type: 'geojson',
+    data: {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: start
+      }
+    }
+  }
+}); 
+   });//map on load */
+       // alert("MAP");
+function start(){
+ origin = [latitudeDriver,longitudeDriver];
+
+// USER LOCATION
+ destination = [longitudeS,latitudeS];
+
+// A simple line from origin to destination.
+var route = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [
+                origin,
+                destination
+            ]
+        }
+    }]
+};
+
+// A single point that animates along the route.
+// Coordinates are initially set to origin.
+var point = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+            "type": "Point",
+            "coordinates": origin
+        }
+    }]
+};
+    
+    
+// Calculate the distance in kilometers between route start/end point.
+var lineDistance = turf.lineDistance(route.features[0], 'kilometers');
+
+var arc = [];
+
+// Number of steps to use in the arc and animation, more steps means
+// a smoother arc and animation, but too many steps will result in a
+// low frame rate
+var steps = 500;
+
+// Draw an arc between the `origin` & `destination` of the two points
+for (var i = 0; i < lineDistance; i += lineDistance / steps) {
+    var segment = turf.along(route.features[0], i, 'kilometers');
+    arc.push(segment.geometry.coordinates);
+}
+
+// Update the route with calculated arc coordinates
+route.features[0].geometry.coordinates = arc;
+
+// Used to increment the value of the point measurement against the route.
+var counter = 0;
+
+    // Add a source and layer displaying a point which will be animated in a circle.
+    map.addSource('route', {
+        "type": "geojson",
+        "data": route,
+        
+    });
+
+    map.addSource('point', {
+        "type": "geojson",
+        "data": point
+    });
+
+    map.addLayer({
+        "id": "route",
+        "source": "route",
+        "type": "line",
+        "paint": {
+            "line-width": 2,
+            "line-color": "#007cbf"
+        }
+       
+    });
+
+    map.addLayer({
+        "id": "point",
+        "source": "point",
+        "type": "symbol",
+        "layout": {
+            "icon-image": "car-15",
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true
+        }
+    });
+    
+    
+    //Add a marker feature to your geojson object
+
+    function animate() {
+        // Update point geometry to a new position based on counter denoting
+        // the index to access the arc.
+      
+        point.features[0].geometry.coordinates = route.features[0].geometry.coordinates[counter];
+
+        // Calculate the bearing to ensure the icon is rotated to match the route arc
+        // The bearing is calculate between the current point and the next point, except
+        // at the end of the arc use the previous point and the current point
+        point.features[0].properties.bearing = turf.bearing(
+            turf.point(route.features[0].geometry.coordinates[counter >= steps ? counter - 1 : counter]),
+            turf.point(route.features[0].geometry.coordinates[counter >= steps ? counter : counter + 1])
+        );
+        
+        // Update the source with this new data.
+        map.getSource('point').setData(point);
+
+        
+        // Request the next frame of animation so long the end has not been reached.
+        if (counter < steps) {
+            requestAnimationFrame(animate);
+        }
+
+        counter = counter + 1;
+            
+
+    }
+
+   function again() {
+       var i=0;
+       var ro= [origin,destination];
+        // Set the coordinates of the original point back to origin
+        point.features[0].geometry.coordinates = origin;
+        //route.features[0].geometry.coordinates = ro;
+
+        // Update the source layer
+
+        map.getSource('point').setData(point);
+       //map.getSource('route').setData(route);
+       
+
+        // Reset the counter
+        counter = 0;
+
+        // Restart the animation.
+        animate(counter);
+       if (i < 5){
+	   
+        window.setTimeout(again,milliTime);
+    }
+    };
+	
+
+    // Start the animation.
+    
+again();
+    
+    }   
+</script>
+
+		 </body>
+		 </html>
